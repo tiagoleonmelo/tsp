@@ -1,12 +1,14 @@
-//
-// Joao Nogueira
-// Tiago Melo
-// ..
-//
-// AED, 2018/2019a
-//
-// solution of the traveling salesman problem
-//
+//!  First solution of the Travelling Salesman Problem - Brute Force
+/*!
+
+  Joao Nogueira
+  Tiago Melo
+  ..
+
+  AED, 2018/2019
+  Documented @ CSLP, 2019/2020
+
+*/
 
 #include <math.h>
 #include <stdio.h>
@@ -16,31 +18,46 @@
 #include <sys/resource.h>
 #include <assert.h>
 
-#include "cities.h"
-#include "../P01/elapsed_time.h"
+#include "../lib/cities.h"
+#include "../lib/elapsed_time.h"
 
-
-//
-// record best solutions
-//
+/**
+ * 
+ * Global variables
+ * 
+ */
 
 static int min_length,max_length;
 static int min_tour[max_n_cities + 1],max_tour[max_n_cities + 1];
 static long int n_tours;
-long hist[10001]; //a distncia ira aparecer como indice e depois irei adicionar a distancia no indice
 
-//
-// first solution (brute force, distance computed at the end, compute best and worst tours)
-//
+/**
+ * 
+ * This variable will store the amount of paths of i distance.
+ * If hist[1000] == 7 then we found 7 paths that had a distance that summed up to 1000
+ * 
+ */
 
-void tsp_v1(int n,int m,int *a)
+long hist[10001]; 
+
+
+
+/**
+ * 
+ * First solution - brute force, distance computed at the end, compute best and worst tours
+ * Generate (n-1)! different permutations for each a[different cities] of length 
+ * and compute the length for each of those
+ * This has O(n!) time complexity
+ * 
+ */
+
+void tsp_v1(int n, int m, int *a)
 {
   int i,t,length;
   length=0;
 
   if(m < n - 1)
-    for(i = m;i < n;i++)
-    {
+    for(i = m;i < n;i++){
       t = a[m];
       a[m] = a[i];
       a[i] = t;
@@ -48,39 +65,55 @@ void tsp_v1(int n,int m,int *a)
       t = a[m];
       a[m] = a[i];
       a[i] = t;
-    }
-  else
-  { // visit permutation
-    // modify the following code to do your stuff
+    }else{
 
-    length=0;
+      /**
+       * 
+       * Visiting a given permutation of cities and calculating its cummulative distance
+       * 
+       */
 
-    for(i = 0;i < n;i++){
-      if(i != n-1){
-        length += cities[a[i]].distance[a[i+1]];
-      }else{
-        length += cities[a[i]].distance[a[0]];
+
+      length=0;
+
+      for(i = 0;i < n;i++){
+        if(i != n-1){
+          length += cities[a[i]].distance[a[i+1]];
+        }else{
+          length += cities[a[i]].distance[a[0]];
+        }
       }
-    }
 
-    if(length < min_length){
-      min_length = length;
-      for(i = 0; i < n; i++)
-        min_tour[i]=a[i];
-    }
+      if(length < min_length){
+        min_length = length;
+        for(i = 0; i < n; i++)
+          min_tour[i]=a[i];
+      }
 
-    if(length > max_length){
-      max_length = length;
-      for(i = 0; i < n; i++)
-        max_tour[i]=a[i];
-    }
+      if(length > max_length){
+        max_length = length;
+        for(i = 0; i < n; i++)
+          max_tour[i]=a[i];
+      }
 
-    hist[length]++;
-    n_tours++;
+      /**
+       * 
+       * Updating our data
+       * 
+       */
+
+      hist[length]++;
+      n_tours++;
 
 
   }
 }
+
+/**
+ * 
+ * We are also generating random paths for each path a with length n
+ * 
+ */
 
 void rand_perm(int n,int a[])
 {
@@ -97,6 +130,13 @@ void rand_perm(int n,int a[])
   }
 }
 
+/**
+ * 
+ * Function that returns the cummulative distance of transversing the path a
+ * of length n
+ * 
+ */
+
 int distance_calc(int n, int a[]){
   int length=0;
   for(int i = 0;i < n;i++){
@@ -109,9 +149,11 @@ int distance_calc(int n, int a[]){
   return length;
 }
 
-//
-// main program
-//
+/**
+ * 
+ * Driver code
+ * 
+ */
 
 int main(int argc,char **argv)
 {
@@ -120,10 +162,11 @@ int main(int argc,char **argv)
   int min_distances[16];
   int max_distances[16];
   long int i;
-  randMaxDistance = 0;
   char file_name[32];
   double dt1;
-  n_mec = 89262;
+  
+  randMaxDistance = 0;
+  n_mec = 89005;
   special = 0;
   init_cities_data(n_mec,special);
   printf("data for init_cities_data(%d,%d)\n",n_mec,special);
@@ -131,11 +174,7 @@ int main(int argc,char **argv)
 #if 1
   print_distances();
 #endif
-  for(n = 3;n <= 15;n++)     // n => numero de caidades visitadas (n_cities)
-  {
-    //
-    // try tsp_v1
-    //
+  for(n = 3;n <= 15;n++){     // n => numero de cidades visitadas (n_cities)
 
     dt1 = -1.0;
     if(n <= 16)
@@ -209,7 +248,16 @@ int main(int argc,char **argv)
       }
     }
   }
-    /*Escrita num ficheiro*/
+    /**
+     * 
+     * Writing our results to a file.
+     * We're printing:
+     *      > computed distance
+     *      > computing times for each number of cities
+     *      > minimum length paths for each number of cities
+     *      > maximum length paths for each number of cities
+     * 
+     */ 
 
    FILE *fp = fopen("distances.m","w");
 
@@ -240,7 +288,7 @@ int main(int argc,char **argv)
 
    fclose(fp);
 
-   /* ______________ */
+
 
   return 0;
 }
