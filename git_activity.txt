@@ -1,4 +1,7 @@
-* 712c702 (HEAD -> master, origin/master) Final Documentation touch ups and HTML generation
+* 9b8e480 (HEAD -> master, origin/master, origin/docker, docker) Docker implementation as well as README update
+* d832a3a Doxyfile
+* ee49815 Git activity log
+* 712c702 Final Documentation touch ups and HTML generation
 * 5fc8ae5 Documenting most of tsp_v1
 * 4c1400a build folder for compiled files
 * cbf85dd folder structure
