@@ -14,5 +14,8 @@ run_all:	all
 examples:	examples.c
 	cc -Wall -O2 examples.c -o $@ -lm
 
-tsp:		tsp.c cities.h
-	cc -Wall -O3 tsp.c -o tsp -lm
+tsp:		tsp.c ../lib/cities.h
+	cc -Wall -O3 tsp.c -o ../build/tsp -lm
+
+tsp_v2:		tsp_v2.c ../lib/cities.h
+	cc -Wall -O3 tsp_v2.c -o ../build/tsp_v2 -lm
